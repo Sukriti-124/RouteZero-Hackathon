@@ -102,6 +102,8 @@ def approve_incident(incident_id: str) -> dict:
         return state.ticket_writer.approve_and_send(incident_id)
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as exc:
         logger.error("Approve failed for %s: %s", incident_id, exc, exc_info=True)
         raise HTTPException(status_code=500, detail=f"Approve failed: {exc}")

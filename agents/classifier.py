@@ -162,6 +162,15 @@ class IncidentClassifier:
         # The overall classification confidence is the service-detection
         # confidence: the router treats < 0.65 as "service could not be
         # identified reliably".
+        if (
+            failure_type == FailureType.UNKNOWN
+            and len(stack_trace_locations) == 0
+            and detected_service == UNKNOWN_SERVICE
+        ):
+            raise ValueError(
+                "Input does not appear to contain a recognizable error, stack trace, "
+                "or alert. Please paste a stack trace, exception, or log output."
+            )
         classification_confidence = service_confidence
         if classification_confidence < LOW_CONFIDENCE_THRESHOLD:
             logger.warning(

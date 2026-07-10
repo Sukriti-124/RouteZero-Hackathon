@@ -23,19 +23,23 @@ READ_TIMEOUT    = 10
 LLM_TIMEOUT     = 120
 APPROVE_TIMEOUT = 30
 
-C_RED    = "#ef4444"
-C_AMBER  = "#f59e0b"
-C_BLUE   = "#3b82f6"
-C_GREEN  = "#22c55e"
-C_ORANGE = "#f97316"
-C_BG     = "#0a0c14"
-C_CARD   = "#12151f"
-C_CARD2  = "#1a1d2e"
-C_BORDER = "#252836"
-C_MUTED  = "#5a6175"
-C_TEXT   = "#e2e8f0"
-C_ACCENT = "#6366f1"
-C_ACC2   = "#818cf8"
+# ── Colour tokens ─────────────────────────────────────────────────────────────
+# Light theme: beige bg, white cards, black dark-cards, cyan accent
+C_RED    = "#c0392b"
+C_AMBER  = "#b7770d"
+C_BLUE   = "#1a6bbf"
+C_GREEN  = "#1a7a2e"
+C_ORANGE = "#c0580a"
+C_BG     = "#F2ECCF"       # beige page background
+C_CARD   = "#FFFFFF"       # white card
+C_CARD2  = "#000000"       # dark/black card
+C_BORDER = "#000000"       # warm grey border
+C_MUTED  = "#6b6250"       # muted warm brown text
+C_TEXT   = "#1a1a1a"       # dark text (on light bg)
+C_TEXT2  = "#ffffff"       # light text (on dark bg)
+C_TEXT3  = "#ffffff"
+C_ACCENT = "#0fa8b0"       # teal/cyan accent
+C_ACC2   = "#0d8a91"       # darker teal
 PRIORITY_COLOR = {"P1": C_RED, "P2": C_AMBER, "P3": C_BLUE}
 
 GLOBAL_CSS = f"""
@@ -46,147 +50,108 @@ GLOBAL_CSS = f"""
 [data-testid="stSidebar"]{{display:none!important;}}
 [data-testid="stMain"]{{background:transparent;padding:0!important;}}
 [data-testid="block-container"]{{padding:0 2rem 2rem 2rem!important;max-width:1200px!important;}}
-h1,h2,h3,h4,h5,h6,p,li,td,th,label,.stMarkdown,div,span{{font-family:'Inter','Segoe UI',system-ui,sans-serif!important;}}
+h1,h2,h3,h4,h5,h6,p,li,td,th,label,.stMarkdown{{font-family:'Inter','Segoe UI',system-ui,sans-serif!important;color:{C_TEXT};}}
+div,span{{font-family:'Inter','Segoe UI',system-ui,sans-serif!important;}}
+[data-testid="stBaseButton-secondary"],
+[data-testid="stBaseButton-secondary"] *{{color:#ffffff!important;}}
+[data-testid="stBaseButton-secondary"]:hover,
+[data-testid="stBaseButton-secondary"]:hover *{{color:#ffffff!important;}}
 code,pre{{font-family:'JetBrains Mono',monospace!important;}}
 
 /* ── NAV ── */
-.rz-topnav {{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:12px 0;border-bottom:1px solid {C_BORDER};margin-bottom:0;
-}}
-.rz-logo-wrap {{display:flex;align-items:center;gap:10px;}}
-.rz-logo-icon {{
-  width:32px;height:32px;
-  background:linear-gradient(135deg,{C_ACCENT},{C_BLUE});
-  border-radius:8px;display:flex;align-items:center;justify-content:center;
-  font-size:15px;box-shadow:0 4px 12px {C_ACCENT}40;flex-shrink:0;
-}}
-.rz-logo-text {{font-size:18px;font-weight:900;letter-spacing:-.05em;color:{C_TEXT};}}
-.rz-logo-text span {{color:{C_ACC2};}}
-.rz-nav-group {{
-  display:flex;align-items:center;
-  border:1px solid {C_BORDER};border-radius:8px;overflow:hidden;
-}}
-.rz-nav-item {{
-  padding:7px 18px;font-size:13px;font-weight:500;color:{C_MUTED};
-  border-right:1px solid {C_BORDER};cursor:pointer;white-space:nowrap;
-  background:transparent;transition:background .15s,color .15s;
-}}
-.rz-nav-item:last-child {{border-right:none;}}
-.rz-nav-item:hover {{background:{C_CARD2};color:{C_TEXT};}}
-.rz-nav-launch {{
-  padding:7px 18px;font-size:13px;font-weight:700;color:#fff;
-  background:{C_ACCENT};cursor:pointer;white-space:nowrap;
-}}
-
-/* Hide default Streamlit button styling when used in nav */
-.nav-btn-row button {{
-  border:none!important;border-radius:0!important;
-  background:transparent!important;color:{C_MUTED}!important;
-  font-size:13px!important;font-weight:500!important;
-  box-shadow:none!important;padding:7px 4px!important;
-  transition:color .15s!important;
-}}
-.nav-btn-row button:hover {{color:{C_TEXT}!important;background:{C_CARD2}!important;}}
-.nav-btn-row button[kind="primary"] {{background:{C_ACCENT}!important;color:#fff!important;}}
-
-/* ── HERO ── */
-.hero-kicker {{
-  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;
-  color:{C_ACCENT};margin-bottom:16px;display:flex;align-items:center;gap:8px;
-}}
+.hero-kicker {{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:{C_ACCENT};margin-bottom:16px;display:flex;align-items:center;gap:8px;}}
 .hero-kicker::before {{content:'';width:24px;height:2px;background:{C_ACCENT};display:inline-block;}}
-.hero-h1 {{
-  font-size:52px;font-weight:900;letter-spacing:-.04em;line-height:1.05;
-  color:{C_TEXT};margin:0 0 20px 0;
-}}
-.hero-h1 span {{
-  background:linear-gradient(135deg,{C_ACCENT},{C_ACC2});
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-}}
+.hero-h1 {{font-size:52px;font-weight:900;letter-spacing:-.04em;line-height:1.05;color:{C_TEXT};margin:0 0 20px 0;}}
+.hero-h1 span {{background:linear-gradient(135deg,{C_ACCENT},{C_ACC2});-webkit-background-clip:text;-webkit-text-fill-color:transparent;}}
 .hero-sub {{font-size:16px;color:{C_MUTED};line-height:1.65;margin:0 0 28px 0;max-width:480px;}}
-.hero-stat {{display:flex;align-items:baseline;gap:4px;font-size:12px;color:{C_MUTED};margin-left:8px;}}
-.hero-stat strong {{font-size:22px;font-weight:800;color:{C_GREEN};letter-spacing:-.03em;}}
-.panel-label {{
-  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;
-  color:{C_MUTED};margin-bottom:10px;display:flex;align-items:center;gap:8px;
-}}
+.panel-label {{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:{C_MUTED};margin-bottom:10px;display:flex;align-items:center;gap:8px;}}
 .panel-label::after {{content:'';flex:1;height:1px;background:{C_BORDER};}}
 .section-eyebrow {{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:{C_ACCENT};margin-bottom:10px;}}
 .section-title {{font-size:30px;font-weight:800;letter-spacing:-.03em;color:{C_TEXT};margin:0 0 8px 0;}}
+
+/* ── PILLARS ── */
 .pillars-grid {{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:64px;}}
 .pillar {{background:{C_CARD};border:1px solid {C_BORDER};border-radius:10px;padding:22px 20px;}}
 .pillar-icon {{width:36px;height:36px;border-radius:8px;background:{C_CARD2};display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:14px;}}
 .pillar-title {{font-size:15px;font-weight:700;color:{C_TEXT};margin-bottom:6px;}}
 .pillar-desc {{font-size:13px;color:{C_MUTED};line-height:1.6;}}
+
+/* ── ARCH ── */
 .arch-title {{font-size:28px;font-weight:800;letter-spacing:-.03em;color:{C_TEXT};margin:0 0 12px 0;}}
 .arch-desc {{font-size:14px;color:{C_MUTED};line-height:1.7;margin:0 0 24px 0;}}
-.integrations-row {{
-  display:flex;align-items:center;justify-content:center;gap:36px;
-  padding:36px 0 28px 0;border-top:1px solid {C_BORDER};flex-wrap:wrap;
-}}
+
+/* ── INTEGRATIONS ── */
+.integrations-row {{display:flex;align-items:center;justify-content:center;gap:36px;padding:36px 0 28px 0;border-top:1px solid {C_BORDER};flex-wrap:wrap;}}
 .int-badge {{font-size:14px;font-weight:700;color:{C_MUTED};display:flex;align-items:center;gap:7px;}}
 
 /* ── DASHBOARD ── */
-.status-bar {{
-  display:flex;align-items:center;background:{C_CARD};
-  border:1px solid {C_BORDER};border-radius:10px;overflow:hidden;margin-bottom:24px;
-}}
+.status-bar {{display:flex;align-items:center;background:{C_CARD};border:1px solid {C_BORDER};border-radius:10px;overflow:hidden;margin-bottom:24px;}}
 .status-item {{flex:1;padding:14px 20px;border-right:1px solid {C_BORDER};}}
 .status-item:last-child {{border-right:none;}}
-.status-value {{font-size:22px;font-weight:800;line-height:1;margin-bottom:3px;letter-spacing:-.02em;}}
+.status-value {{font-size:22px;font-weight:800;line-height:1;margin-bottom:3px;letter-spacing:-.02em;color:{C_TEXT};}}
 .status-label {{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:{C_MUTED};}}
-.routing-block {{
-  background:{C_CARD};border:1px solid {C_BORDER};border-radius:10px;
-  padding:22px 26px;margin:20px 0;position:relative;overflow:hidden;
-}}
-.routing-block::before {{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,{C_ACCENT},{C_BLUE},transparent);
-}}
+
+/* ── ROUTING BLOCK ── */
+.routing-block {{background:{C_CARD};border:1px solid {C_BORDER};border-radius:10px;padding:22px 26px;margin:20px 0;position:relative;overflow:hidden;}}
+.routing-block::before {{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,{C_ACCENT},{C_BLUE},transparent);}}
+
+/* ── BADGES ── */
 .badge {{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}}
-.badge-p1 {{background:{C_RED}20;color:{C_RED};border:1px solid {C_RED}40;}}
-.badge-p2 {{background:{C_AMBER}20;color:{C_AMBER};border:1px solid {C_AMBER}40;}}
-.badge-p3 {{background:{C_BLUE}20;color:{C_BLUE};border:1px solid {C_BLUE}40;}}
-.badge-ok {{background:{C_GREEN}20;color:{C_GREEN};border:1px solid {C_GREEN}40;}}
-.badge-warn {{background:{C_AMBER}20;color:{C_AMBER};border:1px solid {C_AMBER}40;}}
-.badge-info {{background:{C_ACCENT}20;color:{C_ACCENT};border:1px solid {C_ACCENT}40;}}
-.badge-demo {{background:#a855f720;color:#a855f7;border:1px solid #a855f740;}}
+.badge-p1 {{background:{C_RED}18;color:{C_RED};border:1px solid {C_RED}40;}}
+.badge-p2 {{background:{C_AMBER}18;color:{C_AMBER};border:1px solid {C_AMBER}40;}}
+.badge-p3 {{background:{C_BLUE}18;color:{C_BLUE};border:1px solid {C_BLUE}40;}}
+.badge-ok {{background:{C_GREEN}18;color:{C_GREEN};border:1px solid {C_GREEN}40;}}
+.badge-warn {{background:{C_AMBER}18;color:{C_AMBER};border:1px solid {C_AMBER}40;}}
+.badge-info {{background:{C_ACCENT}18;color:{C_ACCENT};border:1px solid {C_ACCENT}40;}}
+.badge-demo {{background:#7c3aed18;color:#7c3aed;border:1px solid #7c3aed40;}}
+
+/* ── MISC ── */
 .rz-bar-bg {{background:{C_BORDER};border-radius:3px;height:4px;width:100%;margin-top:8px;}}
 .rz-bar-fill {{height:4px;border-radius:3px;}}
-.cause-callout {{
-  background:linear-gradient(135deg,{C_AMBER}0a,transparent);
-  border:1px solid {C_AMBER}30;border-left:3px solid {C_AMBER};
-  border-radius:8px;padding:14px 18px;margin:16px 0;
-}}
-.ctx-chip {{
-  display:inline-block;background:{C_BORDER};color:{C_MUTED};
-  font-size:10px;font-family:'JetBrains Mono',monospace;
-  padding:2px 8px;border-radius:4px;margin:2px 3px 2px 0;border:1px solid {C_BORDER};
-}}
-.approve-zone {{
-  background:linear-gradient(135deg,{C_GREEN}08,transparent);
-  border:1px solid {C_GREEN}30;border-left:3px solid {C_GREEN};
-  border-radius:10px;padding:20px 24px;margin-top:24px;
-}}
-.stress-warning {{background:{C_RED}0c;border:1px solid {C_RED}30;border-left:3px solid {C_RED};border-radius:8px;padding:12px 16px;margin-bottom:10px;font-size:13px;color:{C_TEXT};}}
-.flag-card {{background:{C_CARD2};border:1px solid {C_BORDER};border-left:3px solid {C_RED};border-radius:8px;padding:18px 22px;margin-bottom:14px;}}
+.cause-callout {{background:linear-gradient(135deg,{C_AMBER}0a,transparent);border:1px solid {C_AMBER}40;border-left:3px solid {C_AMBER};border-radius:8px;padding:14px 18px;margin:16px 0;}}
+.ctx-chip {{display:inline-block;background:{C_BORDER};color:{C_MUTED};font-size:10px;font-family:'JetBrains Mono',monospace;padding:2px 8px;border-radius:4px;margin:2px 3px 2px 0;border:1px solid {C_BORDER};}}
+.approve-zone {{background:linear-gradient(135deg,{C_GREEN}0a,transparent);border:1px solid {C_GREEN}40;border-left:3px solid {C_GREEN};border-radius:10px;padding:20px 24px;margin-top:24px;}}
+.stress-warning {{background:{C_RED}0a;border:1px solid {C_RED}30;border-left:3px solid {C_RED};border-radius:8px;padding:12px 16px;margin-bottom:10px;font-size:13px;color:{C_TEXT};}}
+
+/* ── DARK CARDS — text must be light ── */
+.flag-card {{background:{C_CARD2};border:1px solid {C_CARD2};border-left:3px solid {C_RED};border-radius:8px;padding:18px 22px;margin-bottom:14px;}}
+.flag-card * {{color:{C_TEXT2}!important;}}
 .rz-card {{background:{C_CARD2};border:1px solid {C_BORDER};border-radius:8px;padding:16px 20px;margin-bottom:12px;}}
+.rz-card * {{color:{C_TEXT2}!important;}}
 .step-card {{background:{C_CARD2};border:1px solid {C_BORDER};border-left:3px solid {C_ACCENT};border-radius:8px;padding:18px 20px;margin-bottom:4px;}}
-.step-number {{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:{C_ACCENT}20;color:{C_ACCENT};border-radius:50%;font-size:13px;font-weight:700;margin-right:10px;flex-shrink:0;}}
-.step-title {{font-size:14px;font-weight:700;color:{C_TEXT};}}
-.step-time {{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:{C_ACC2};margin-top:2px;}}
-.step-desc {{font-size:13px;color:{C_MUTED};margin-top:8px;margin-left:38px;line-height:1.6;}}
-.code-block {{background:#060810;border:1px solid {C_BORDER};border-radius:6px;padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#7dd3fc;margin-top:10px;margin-left:38px;overflow-x:auto;white-space:pre;line-height:1.6;}}
+.step-card * {{color:{C_TEXT2}!important;}}
+.step-number {{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:{C_ACCENT}30;color:{C_ACCENT}!important;border-radius:50%;font-size:13px;font-weight:700;margin-right:10px;flex-shrink:0;}}
+.step-title {{font-size:14px;font-weight:700;}}
+.step-time {{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:{C_ACCENT}!important;margin-top:2px;}}
+.step-desc {{font-size:13px;margin-top:8px;margin-left:38px;line-height:1.6;}}
+.code-block {{background:#060810;border:1px solid #333;border-radius:6px;padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#7dd3fc;margin-top:10px;margin-left:38px;overflow-x:auto;white-space:pre;line-height:1.6;}}
+
+/* ── TABS ── */
 [data-testid="stTabs"] [role="tablist"]{{border-bottom:1px solid {C_BORDER}!important;gap:4px;}}
 [data-testid="stTabs"] [role="tab"]{{font-size:13px;font-weight:500;color:{C_MUTED};padding:8px 16px;border-radius:6px 6px 0 0;}}
-[data-testid="stTabs"] [role="tab"][aria-selected="true"]{{color:{C_TEXT};font-weight:600;}}
-[data-testid="stMetricValue"]{{font-size:22px!important;font-weight:700!important;}}
+[data-testid="stTabs"] [role="tab"][aria-selected="true"]{{color:{C_TEXT};font-weight:700;background:{C_CARD};}}
+[data-testid="stMetricValue"]{{font-size:22px!important;font-weight:700!important;color:{C_TEXT}!important;}}
 [data-testid="stExpander"]{{background:{C_CARD}!important;border:1px solid {C_BORDER}!important;border-radius:8px!important;}}
 div[data-testid="stDataFrame"]{{border:1px solid {C_BORDER};border-radius:8px;overflow:hidden;}}
 iframe{{border:none!important;border-radius:8px;}}
-textarea{{background:{C_CARD2}!important;border:1px solid {C_BORDER}!important;border-radius:8px!important;color:{C_TEXT}!important;font-family:'JetBrains Mono',monospace!important;font-size:13px!important;line-height:1.6!important;}}
+
+/* ── INPUTS ── */
+textarea{{background:{C_CARD2}!important;border:1px solid {C_BORDER}!important;border-radius:8px!important;color:{C_TEXT2}!important;font-family:'JetBrains Mono',monospace!important;font-size:13px!important;line-height:1.6!important;}}
 textarea:focus{{border-color:{C_ACCENT}!important;box-shadow:0 0 0 2px {C_ACCENT}20!important;}}
+textarea::placeholder{{color:#888!important;}}
+[data-testid="stSelectbox"] > div > div{{background:{C_CARD2}!important;border:1px solid {C_BORDER}!important;color:{C_TEXT2}!important;border-radius:8px!important;}}
+[data-testid="stTextInput"] > div > div > input{{background:{C_CARD2}!important;border:1px solid {C_BORDER}!important;color:{C_TEXT2}!important;border-radius:8px!important;}}
+[data-testid="stNumberInput"] > div > div > input{{background:{C_CARD2}!important;border:1px solid {C_BORDER}!important;color:{C_TEXT2}!important;border-radius:8px!important;}}
+[data-testid="stFileUploader"]{{background:{C_CARD}!important;border:1px solid {C_BORDER}!important;border-radius:8px!important;}}
+div[data-baseweb="select"] ul {{background:{C_CARD2}!important;}}
+div[data-baseweb="select"] li {{color:{C_TEXT2}!important;background:{C_CARD2}!important;}}
+div[data-baseweb="select"] li:hover {{background:#2a2a2a!important;color:{C_TEXT2}!important;}}
+div[data-baseweb="popover"] {{background:{C_CARD2}!important;}}
+div[data-baseweb="menu"] {{background:{C_CARD2}!important;}}
+div[data-baseweb="menu"] li {{color:{C_TEXT2}!important;}}
+div[data-baseweb="select"] *{{color:{C_TEXT2}!important;}}
+div[data-baseweb="popover"] *{{color:{C_TEXT2}!important;background:{C_CARD2};}}
+div[data-baseweb="menu"] *{{color:{C_TEXT2}!important;}}
 </style>
 """
 
@@ -197,7 +162,6 @@ if "page" not in st.session_state:
     st.session_state["page"] = "landing"
 if "prev_page" not in st.session_state:
     st.session_state["prev_page"] = "landing"
-
 
 # ---------------------------------------------------------------------------
 # HTTP helpers
@@ -225,7 +189,6 @@ def api_post(path, body=None, timeout=READ_TIMEOUT):
         st.error(f"Backend error POST {path}: {detail}"); return None
     except Exception as e:
         _show_err(e); return None
-
 
 # ---------------------------------------------------------------------------
 # Formatting helpers
@@ -277,68 +240,65 @@ def load_org_config():
     except Exception as e:
         logger.warning("org_config: %s", e); return None
 
-
 # ---------------------------------------------------------------------------
-# NAV component — renders the top bar consistently across all pages
+# NAV components
 # ---------------------------------------------------------------------------
 
 def render_nav(current_page: str):
-    """
-    Renders logo on left, nav links on right — all in one st.columns row.
-    Logo = HTML (no click). Nav items = real Streamlit buttons styled to look
-    like a connected pill group. Returns dict of which button was clicked.
-    """
     logo_col, gap_col, p_col, d_col, c_col = st.columns([3, 3, 1, 1, 1])
 
     with logo_col:
         st.markdown(f"""
         <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px 0;">
-          <div style="width:32px;height:32px;background:linear-gradient(135deg,{C_ACCENT},{C_BLUE});
+          <div style="width:50px;height:50px;background:linear-gradient(135deg,{C_ACCENT},{C_BLUE});
                       border-radius:8px;display:flex;align-items:center;justify-content:center;
-                      font-size:15px;flex-shrink:0;box-shadow:0 4px 12px {C_ACCENT}40;">⚡</div>
+                      font-size:28px;flex-shrink:0;box-shadow:0 4px 12px {C_ACCENT}40;">⚡</div>
           <span style="font-size:18px;font-weight:900;letter-spacing:-.05em;color:{C_TEXT};">
-            Route<span style="color:{C_ACC2};">Zero</span>
+            Route<span style="color:{C_ACCENT};">Zero</span>
           </span>
         </div>
         """, unsafe_allow_html=True)
 
-    # Style the button row to look connected
     st.markdown(f"""
     <style>
-    /* Target only the nav button row columns */
     div[data-testid="stHorizontalBlock"]:first-of-type div[data-testid="column"]:nth-child(n+3) button {{
         border-radius: 0 !important;
-        border: 1px solid {C_BORDER} !important;
-        border-right: none !important;
+        border: none !important;
+        border-right: 1px solid {C_BORDER} !important;
         background: {C_CARD} !important;
-        color: {C_MUTED} !important;
-        font-size: 13px !important;
-        font-weight: 500 !important;
+        color: {C_TEXT2} !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.02em !important;
         box-shadow: none !important;
-        padding: 7px 4px !important;
+        padding: 8px 4px !important;
         margin-top: 8px !important;
+        outline: none !important;
     }}
     div[data-testid="stHorizontalBlock"]:first-of-type div[data-testid="column"]:nth-child(3) button {{
-        border-radius: 7px 0 0 7px !important;
+        border-radius: 8px 0 0 8px !important;
+        border-left: 1px solid {C_BORDER} !important;
+        border-top: 1px solid {C_BORDER} !important;
+        border-bottom: 1px solid {C_BORDER} !important;
     }}
-    div[data-testid="stHorizontalBlock"]:first-of-type div[data-testid="column"]:nth-child(6) button {{
+    div[data-testid="stHorizontalBlock"]:first-of-type div[data-testid="column"]:nth-child(4) button {{
+        border-top: 1px solid {C_BORDER} !important;
+        border-bottom: 1px solid {C_BORDER} !important;
+    }}
+    div[data-testid="stHorizontalBlock"]:first-of-type div[data-testid="column"]:nth-child(5) button {{
+        border-radius: 0 8px 8px 0 !important;
         border-right: 1px solid {C_BORDER} !important;
-        border-radius: 0 7px 7px 0 !important;
+        border-top: 1px solid {C_BORDER} !important;
+        border-bottom: 1px solid {C_BORDER} !important;
     }}
     div[data-testid="stHorizontalBlock"]:first-of-type div[data-testid="column"]:nth-child(n+3) button:hover {{
         background: {C_CARD2} !important;
-        color: {C_TEXT} !important;
-    }}
-    div[data-testid="stHorizontalBlock"]:first-of-type div[data-testid="column"]:nth-child(6) button[kind="primary"] {{
-        background: {C_ACCENT} !important;
-        color: white !important;
-        border-color: {C_ACCENT} !important;
+        color: {C_TEXT2} !important;
     }}
     </style>
     """, unsafe_allow_html=True)
 
     clicked = None
-
     with p_col:
         if st.button("Product", key=f"nav_p_{current_page}", use_container_width=True):
             clicked = "product"
@@ -354,16 +314,15 @@ def render_nav(current_page: str):
 
 
 def render_dash_nav(current_page: str):
-    """Dashboard nav: logo left, Home + Docs + Connect right."""
     logo_col, gap_col, h_col, d_col, c_col = st.columns([3, 3, 1, 1, 1])
 
     with logo_col:
         st.markdown(f"""
         <div style="display:flex;align-items:center;gap:10px;padding:10px 0 6px 0;">
-          <div style="width:30px;height:30px;background:linear-gradient(135deg,{C_ACCENT},{C_BLUE});
-                      border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;">⚡</div>
+          <div style="width:36px;height:36px;background:linear-gradient(135deg,{C_ACCENT},{C_BLUE});
+                      border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:18px;">⚡</div>
           <span style="font-size:17px;font-weight:900;letter-spacing:-.05em;color:{C_TEXT};">
-            Route<span style="color:{C_ACC2};">Zero</span>
+            Route<span style="color:{C_ACCENT};">Zero</span>
           </span>
         </div>
         """, unsafe_allow_html=True)
@@ -379,12 +338,11 @@ def render_dash_nav(current_page: str):
             clicked = "docs"
     with c_col:
         st.markdown("<div style='padding-top:8px;'></div>", unsafe_allow_html=True)
-        if st.button("🔌 Connect", key=f"dash_conn_{current_page}", use_container_width=True):
+        if st.button("Connect", key=f"dash_conn_{current_page}", use_container_width=True):
             clicked = "connect"
 
     st.markdown(f'<div style="height:1px;background:{C_BORDER};margin-bottom:20px;"></div>', unsafe_allow_html=True)
     return clicked
-
 
 # ---------------------------------------------------------------------------
 # Graph builder
@@ -398,7 +356,7 @@ def build_graph_html(graph_data):
     for e in edges:
         s,t = e.get("source_node_id"), e.get("target_node_id")
         if s and t: adj.setdefault(s,set()).add(t); adj.setdefault(t,set()).add(s)
-    net = Network(height="520px",width="100%",directed=True,cdn_resources="remote",bgcolor=C_CARD,font_color=C_TEXT)
+    net = Network(height="520px",width="100%",directed=True,cdn_resources="remote",bgcolor="#1a1a1a",font_color=C_TEXT2)
     net.set_options("""{
       "physics":{"enabled":true,"forceAtlas2Based":{"gravitationalConstant":-80,"centralGravity":0.005,"springLength":130,"springConstant":0.04,"damping":0.6,"avoidOverlap":1},"maxVelocity":40,"minVelocity":0.75,"solver":"forceAtlas2Based","stabilization":{"enabled":true,"iterations":200,"updateInterval":25}},
       "nodes":{"borderWidth":0,"borderWidthSelected":2,"font":{"size":11,"face":"Inter, sans-serif"},"scaling":{"min":16,"max":44}},
@@ -410,19 +368,18 @@ def build_graph_html(graph_data):
         nid = node.get("node_id")
         if not nid: continue
         ic = int(node.get("incident_count") or 0)
-        if nid in red_ids: color={"background":C_RED,"border":C_RED,"highlight":{"background":"#f87171","border":"#dc2626"}}
-        elif adj.get(nid,set())&red_ids: color={"background":C_ORANGE,"border":C_ORANGE,"highlight":{"background":"#fb923c","border":"#ea580c"}}
-        else: color={"background":"#1e2535","border":"#2d3548","highlight":{"background":"#2d3548","border":"#3d4a63"}}
+        if nid in red_ids: color={"background":C_RED,"border":C_RED,"highlight":{"background":"#e74c3c","border":"#c0392b"}}
+        elif adj.get(nid,set())&red_ids: color={"background":C_ORANGE,"border":C_ORANGE,"highlight":{"background":"#e67e22","border":"#d35400"}}
+        else: color={"background":"#2d2d2d","border":"#444","highlight":{"background":"#3d3d3d","border":"#555"}}
         name = node.get("name",nid)
         hover = f"{name}\n{node.get('file_path','?')} L{node.get('start_line','?')}-{node.get('end_line','?')}\nincidents: {ic}"
-        net.add_node(nid,label=name,color=color,size=16+8*ic,title=hover,font={"color":C_TEXT,"size":11})
+        net.add_node(nid,label=name,color=color,size=16+8*ic,title=hover,font={"color":C_TEXT2,"size":11})
         added.add(nid)
     for e in edges:
         s,t = e.get("source_node_id"),e.get("target_node_id")
         if s in added and t in added:
-            net.add_edge(s,t,title=e.get("relationship_type",""),color={"color":C_BORDER,"highlight":C_ACCENT},arrows="to")
+            net.add_edge(s,t,title=e.get("relationship_type",""),color={"color":"#555","highlight":C_ACCENT},arrows="to")
     return net.generate_html()
-
 
 # ---------------------------------------------------------------------------
 # Page renderers
@@ -436,7 +393,7 @@ def render_connect_page(back_to: str):
     if st.button("← Back", key="conn_back"):
         st.session_state["page"] = back_to; st.rerun()
 
-    st.markdown(f'<h2 style="margin:16px 0 4px 0;font-size:28px;font-weight:800;letter-spacing:-.03em;">Connect Your Stack</h2>', unsafe_allow_html=True)
+    st.markdown(f'<h2 style="font-size:28px;font-weight:800;letter-spacing:-.03em;color:{C_TEXT};margin:16px 0 4px 0;">Connect Your Stack</h2>', unsafe_allow_html=True)
     st.markdown(f'<p style="color:{C_MUTED};font-size:14px;margin:0 0 28px 0;">Three steps, under an hour, fully automated from that point on.</p>', unsafe_allow_html=True)
 
     steps = [
@@ -454,7 +411,7 @@ def render_connect_page(back_to: str):
           <div class="code-block">{code}</div>
         </div>""", unsafe_allow_html=True)
         if i<len(steps)-1:
-            st.markdown(f'<div style="display:flex;justify-content:flex-start;margin:0 0 4px 23px;"><div style="width:2px;height:14px;background:{C_ACCENT}33;"></div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div style="display:flex;justify-content:flex-start;margin:0 0 4px 23px;"><div style="width:2px;height:14px;background:{C_ACCENT}44;"></div></div>', unsafe_allow_html=True)
 
     st.markdown("<div style='height:28px;'></div>", unsafe_allow_html=True)
     st.markdown(f'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:{C_MUTED};margin-bottom:12px;">Supported Integrations</div>', unsafe_allow_html=True)
@@ -477,11 +434,11 @@ def render_connect_page(back_to: str):
         sl = "Connected" if connected else ("Simulated" if DEMO_MODE else "Not connected")
         sd = "●" if connected else "○"
         with [g1,g2,g3][i%3]:
-            st.markdown(f"""<div class="rz-card" style="border-left:3px solid {color};">
+            st.markdown(f"""<div style="background:{C_CARD};border:1px solid {C_BORDER};border-left:3px solid {color};border-radius:8px;padding:16px 20px;margin-bottom:12px;">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
                 <div style="display:flex;align-items:center;gap:8px;">
                   <span style="font-size:14px;font-weight:700;color:{C_TEXT};">{name}</span>
-                  <span style="font-size:10px;color:{color};background:{color}20;padding:2px 7px;border-radius:4px;font-weight:600;">{cat}</span>
+                  <span style="font-size:10px;color:{color};background:{color}18;padding:2px 7px;border-radius:4px;font-weight:600;">{cat}</span>
                 </div>
                 <span style="font-size:10px;color:{sc};font-weight:600;">{sd} {sl}</span>
               </div>
@@ -503,12 +460,12 @@ def render_connect_page(back_to: str):
     ]:
         mc = C_GREEN if method=="GET" else C_BLUE
         st.markdown(f"""<div style="display:flex;align-items:flex-start;gap:12px;padding:8px 0;border-bottom:1px solid {C_BORDER};font-size:12px;">
-          <span style="background:{mc}20;color:{mc};font-weight:700;font-family:monospace;padding:2px 8px;border-radius:4px;min-width:42px;text-align:center;flex-shrink:0;">{method}</span>
+          <span style="background:{mc}18;color:{mc};font-weight:700;font-family:monospace;padding:2px 8px;border-radius:4px;min-width:42px;text-align:center;flex-shrink:0;">{method}</span>
           <span style="color:{C_TEXT};font-family:monospace;flex-shrink:0;min-width:260px;">{path}</span>
           <span style="color:{C_MUTED};">{desc}</span>
         </div>""", unsafe_allow_html=True)
 
-    st.markdown(f"""<div style="background:{C_ACCENT}0a;border:1px solid {C_ACCENT}25;border-radius:10px;padding:22px 26px;margin-top:28px;">
+    st.markdown(f"""<div style="background:{C_ACCENT}0a;border:1px solid {C_ACCENT}30;border-radius:10px;padding:22px 26px;margin-top:28px;">
       <div style="font-size:14px;font-weight:700;color:{C_TEXT};margin-bottom:8px;">What you're seeing right now</div>
       <div style="font-size:13px;color:{C_MUTED};line-height:1.7;">
         Running with <code style="color:{C_ACCENT};background:{C_ACCENT}15;padding:1px 6px;border-radius:4px;">DEMO_MODE=true</code>
@@ -528,7 +485,7 @@ def render_docs_page(back_to: str):
     if st.button("← Back", key="docs_back"):
         st.session_state["page"] = back_to; st.rerun()
 
-    st.markdown(f'<h2 style="margin:16px 0 4px 0;font-size:28px;font-weight:800;letter-spacing:-.03em;">Documentation</h2>', unsafe_allow_html=True)
+    st.markdown(f'<h2 style="font-size:28px;font-weight:800;letter-spacing:-.03em;color:{C_TEXT};margin:16px 0 4px 0;">Documentation</h2>', unsafe_allow_html=True)
     st.markdown(f'<p style="color:{C_MUTED};font-size:14px;margin:0 0 28px 0;">Everything you need to use RouteZero effectively.</p>', unsafe_allow_html=True)
 
     tab_usage, tab_agents, tab_faq, tab_trouble = st.tabs(["How to Use","The Four Agents","FAQ","Troubleshooting"])
@@ -536,12 +493,12 @@ def render_docs_page(back_to: str):
     with tab_usage:
         for step_title, step_body in [
             ("Step 1 — Paste your error", "Go to the New Incident tab and paste any error, stack trace, or alert text. Accepts Python tracebacks, Java stack traces, pytest output, plain text alerts, and JSON payloads from PagerDuty or OpsGenie."),
-            ("Step 2 — Add context (optional but recommended)", "Expand the context panel. All fields optional.<br><br><strong style='color:{C_TEXT};'>Most impactful:</strong><br>• <strong style='color:{C_TEXT};'>Affected users</strong> — determines P1 vs P2<br>• <strong style='color:{C_TEXT};'>Environment</strong> — production escalates priority<br>• <strong style='color:{C_TEXT};'>Recent deployment</strong> — enables probable cause<br>• <strong style='color:{C_TEXT};'>SLA breach minutes</strong> — triggers P1 if under 60"),
-            ("Step 3 — Review the routing decision", "After clicking Route Incident you see:<br>• Which team owns this service and why<br>• What priority was assigned and which rule fired<br>• Routing confidence percentage<br>• Probable cause from deployment timing<br>• Missing context that would improve the decision"),
-            ("Step 4 — Review stakeholder notifications", "Three stakeholder cards show who gets notified:<br>• <strong style='color:{C_BLUE};'>Engineer</strong> — full technical ticket, Jira assigned<br>• <strong style='color:{C_ACC2};'>Team Lead</strong> — leadership-framed summary, Slack<br>• <strong style='color:{C_AMBER};'>Manager</strong> — five-sentence plain English digest"),
-            ("Step 5 — Approve and Send", "Click Approve and Send. The ticket is created in Jira and all stakeholders are notified simultaneously. The zone shows exactly who gets notified before you commit. Cannot be undone."),
+            ("Step 2 — Add context (optional but recommended)", f"Expand the context panel. All fields optional.<br><br><strong style='color:{C_TEXT};'>Most impactful:</strong><br>• Affected users — determines P1 vs P2<br>• Environment — production escalates priority<br>• Recent deployment — enables probable cause<br>• SLA breach minutes — triggers P1 if under 60"),
+            ("Step 3 — Review the routing decision", "After clicking Route Incident you see: which team owns this service and why, what priority was assigned and which rule fired, routing confidence percentage, probable cause from deployment timing, and missing context that would improve the decision."),
+            ("Step 4 — Review stakeholder notifications", "Three stakeholder cards show who gets notified: Engineer (full technical ticket, Jira assigned), Team Lead (leadership-framed summary, Slack), Manager (five-sentence plain English digest)."),
+            ("Step 5 — Approve and Send", "Click Approve and Send. The ticket is created in Jira and all stakeholders are notified simultaneously. Cannot be undone."),
         ]:
-            st.markdown(f"""<div class="rz-card" style="margin-bottom:16px;">
+            st.markdown(f"""<div style="background:{C_CARD};border:1px solid {C_BORDER};border-radius:8px;padding:20px 24px;margin-bottom:16px;">
               <div style="font-size:16px;font-weight:700;color:{C_TEXT};margin-bottom:10px;">{step_title}</div>
               <div style="font-size:13px;color:{C_MUTED};line-height:1.7;">{step_body}</div>
             </div>""", unsafe_allow_html=True)
@@ -583,7 +540,6 @@ def render_docs_page(back_to: str):
             with st.expander(f"⚠ {issue}"):
                 st.markdown(f'<div style="font-size:13px;color:{C_MUTED};line-height:1.7;">{solution}</div>', unsafe_allow_html=True)
 
-
 # ---------------------------------------------------------------------------
 # Load org config
 # ---------------------------------------------------------------------------
@@ -601,7 +557,6 @@ if st.session_state["page"] == "landing":
         st.session_state["page"] = nav_click
         st.rerun()
 
-    # Hero
     hero_left, hero_right = st.columns([1, 1], gap="large")
 
     with hero_left:
@@ -609,12 +564,9 @@ if st.session_state["page"] == "landing":
         <div style="padding-top:48px;">
           <div class="hero-kicker">Zero administrative overhead</div>
           <h1 class="hero-h1">Incident Routing.<br><span>Zero Pain.</span></h1>
-          <p class="hero-sub">
-            Paste a stack trace. RouteZero classifies it, routes it to the right team,
-            writes the Jira ticket, and notifies every stakeholder with exactly what
-            they need to know. In under 45 seconds.
-          </p>
-                    <p style="font-size:13px;color:{C_MUTED};margin:0;">Faster routing. More accurate tickets. Less noise.</p>
+          <p class="hero-sub">Paste a stack trace. RouteZero classifies it, routes it to the right team,
+            writes the Jira ticket, and notifies every stakeholder with exactly what they need to know.</p>
+          <p style="font-size:13px;color:{C_MUTED};margin:0;">Faster routing. More accurate tickets. Less noise.</p>
         </div>
         """, unsafe_allow_html=True)
 
@@ -632,7 +584,7 @@ if st.session_state["page"] == "landing":
             label_visibility="collapsed")
 
         c1h, c2h = st.columns(2)
-        hero_env = c1h.selectbox("Env", ["production","staging","development"], key="hero_env", label_visibility="collapsed")
+        hero_env = c1h.selectbox("Env", ["production","staging","development"], key="hero_env", index=None, placeholder="production", label_visibility="collapsed")
         hero_svc = c2h.text_input("Svc", placeholder="payment-service", key="hero_svc", label_visibility="collapsed")
 
         if st.button("Approve & Route →", type="primary", key="hero_route_btn", disabled=not hero_error.strip(), use_container_width=True):
@@ -648,13 +600,13 @@ if st.session_state["page"] == "landing":
         st.markdown(f"""
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px;">
           <div style="background:{C_CARD2};border:1px solid {C_BORDER};border-radius:7px;padding:8px 12px;text-align:center;">
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:{C_MUTED};">Classification</div>
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:{C_TEXT2};">Classification</div>
           </div>
           <div style="background:{C_CARD2};border:1px solid {C_BORDER};border-radius:7px;padding:8px 12px;text-align:center;">
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:{C_MUTED};">Routing Decision</div>
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:{C_TEXT2};">Routing Decision</div>
           </div>
-          <div style="background:{C_ACCENT}12;border:1px solid {C_ACCENT}40;border-radius:7px;padding:8px 12px;text-align:center;">
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:{C_ACCENT};">Jira Ticket Draft</div>
+          <div style="background:{C_CARD2};border:1px solid {C_BORDER};border-radius:7px;padding:8px 12px;text-align:center;">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:{C_TEXT2};">Jira Ticket Draft</div>
           </div>
         </div>
         """, unsafe_allow_html=True)
@@ -663,7 +615,7 @@ if st.session_state["page"] == "landing":
     st.markdown("<div style='height:56px;'></div>", unsafe_allow_html=True)
     st.markdown(f"""<div class="pillars-grid">
       <div class="pillar"><div class="pillar-icon">🔒</div><div class="pillar-title">Zero LLM for Classification</div><div class="pillar-desc">Agent 1 uses deterministic regex and rules. Every classification is fully auditable and traceable to a specific rule.</div></div>
-      <div class="pillar"><div class="pillar-icon">⚡</div><div class="pillar-title">Minutes, Not Hours</div><div class="pillar-desc">20–40 minutes of manual routing, ticket writing, and stakeholder notification eliminated per incident.</div></div>
+      <div class="pillar"><div class="pillar-icon">⚡</div><div class="pillar-title">Faster, Not Just Automated</div><div class="pillar-desc">Manual routing, ticket writing, and stakeholder notification eliminated per incident. Multiply across your team.</div></div>
       <div class="pillar"><div class="pillar-icon">✅</div><div class="pillar-title">Traceable to Verified Facts</div><div class="pillar-desc">Every claim in every ticket traces to a verified input. The system never invents a number or file name.</div></div>
     </div>""", unsafe_allow_html=True)
 
@@ -699,16 +651,16 @@ if st.session_state["page"] == "landing":
         graph_data_landing = api_get("/graph/nodes")
         if graph_data_landing and graph_data_landing.get("nodes"):
             try: components.html(build_graph_html(graph_data_landing), height=360, scrolling=False)
-            except Exception: st.markdown(f'<div style="height:360px;background:{C_CARD};border:1px solid {C_BORDER};border-radius:10px;display:flex;align-items:center;justify-content:center;color:{C_MUTED};font-size:13px;">Could not render graph</div>', unsafe_allow_html=True)
+            except Exception: st.markdown(f'<div style="height:360px;background:{C_CARD2};border:1px solid {C_BORDER};border-radius:10px;display:flex;align-items:center;justify-content:center;color:{C_TEXT2};font-size:13px;">Could not render graph</div>', unsafe_allow_html=True)
         else:
-            st.markdown(f"""<div style="height:360px;background:{C_CARD};border:1px solid {C_BORDER};border-radius:10px;display:flex;align-items:center;justify-content:center;">
-              <div style="text-align:center;color:{C_MUTED};">
+            st.markdown(f"""<div style="height:360px;background:{C_CARD2};border:1px solid {C_BORDER};border-radius:10px;display:flex;align-items:center;justify-content:center;">
+              <div style="text-align:center;color:{C_TEXT2};">
                 <div style="font-size:32px;margin-bottom:8px;">🕸️</div>
                 <div style="font-size:13px;">Code knowledge graph</div>
-                <div style="font-size:11px;margin-top:4px;">Run an audit to populate</div>
+                <div style="font-size:11px;margin-top:4px;color:#aaa;">Run an audit to populate</div>
               </div>
             </div>""", unsafe_allow_html=True)
-        st.markdown(f'<div style="display:flex;gap:16px;margin-top:10px;font-size:11px;color:{C_MUTED};"><span><span style="color:{C_RED};">●</span> 2+ incidents</span><span><span style="color:{C_ORANGE};">●</span> connected</span><span><span style="color:#2d3548;">●</span> clean</span></div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="display:flex;gap:16px;margin-top:10px;font-size:11px;color:{C_MUTED};"><span><span style="color:{C_RED};">●</span> 2+ incidents</span><span><span style="color:{C_ORANGE};">●</span> connected</span><span><span style="color:#888;">●</span> clean</span></div>', unsafe_allow_html=True)
 
     with arch_right:
         st.markdown(f"""<div style="padding-top:40px;">
@@ -721,10 +673,10 @@ if st.session_state["page"] == "landing":
             <div style="display:flex;align-items:flex-start;gap:10px;"><div style="width:6px;height:6px;border-radius:50%;background:{C_ACCENT};margin-top:5px;flex-shrink:0;"></div><div style="font-size:13px;color:{C_MUTED};">Files PLM tickets with developer attribution before the next incident</div></div>
           </div>
         </div>""", unsafe_allow_html=True)
+        st.markdown(f'<style>#arch_btn{{color:{C_TEXT2}!important;}} button[data-testid="baseButton-secondary"]{{color:{C_TEXT2}!important;}}</style>', unsafe_allow_html=True)
         if st.button("View Architectural Intelligence →", key="arch_btn"):
             st.session_state["page"] = "dashboard"; st.rerun()
 
-    # Integrations footer
     st.markdown(f"""<div class="integrations-row">
       <div class="int-badge" style="color:{C_MUTED};">Works with</div>
       <div class="int-badge">🔵 Jira</div>
@@ -734,32 +686,29 @@ if st.session_state["page"] == "landing":
       <div class="int-badge">⚫ GitHub</div>
     </div>
     <div style="text-align:center;padding-bottom:32px;">
-      <div style="font-size:11px;color:{C_MUTED};">MIT license · RouteZero — built from real engineering pain</div>
+      <div style="font-size:11px;color:{C_MUTED};">MIT license · RouteZero</div>
     </div>""", unsafe_allow_html=True)
 
     st.stop()
 
-
 # ---------------------------------------------------------------------------
-# PAGE: DOCS (from landing or dashboard)
+# PAGE: DOCS
 # ---------------------------------------------------------------------------
 
 if st.session_state["page"] == "docs":
     render_docs_page(back_to=st.session_state.get("prev_page","landing"))
     st.stop()
 
-
 # ---------------------------------------------------------------------------
-# PAGE: CONNECT (from landing or dashboard)
+# PAGE: CONNECT
 # ---------------------------------------------------------------------------
 
 if st.session_state["page"] == "connect":
     render_connect_page(back_to=st.session_state.get("prev_page","dashboard"))
     st.stop()
 
-
 # ---------------------------------------------------------------------------
-# PAGE: DASHBOARD (default after landing)
+# PAGE: DASHBOARD
 # ---------------------------------------------------------------------------
 
 nav_click = render_dash_nav("dashboard")
@@ -768,7 +717,6 @@ if nav_click:
     st.session_state["page"] = nav_click
     st.rerun()
 
-# Pull data
 stats              = api_get("/stats")
 all_incidents_data = api_get("/incidents") or []
 table_counts       = (stats or {}).get("table_counts") or {}
@@ -790,7 +738,7 @@ st.markdown(f"""<div class="status-bar">
 
 tab_new, tab_history, tab_intel = st.tabs(["⚡  New Incident","📋  Incident History","🧠  Architectural Intelligence"])
 
-# ── TAB 1: NEW INCIDENT ──────────────────────────────────────────────────────
+# ── TAB 1 ────────────────────────────────────────────────────────────────────
 with tab_new:
     st.markdown(f"""<div style="margin-top:8px;">
       <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:{C_MUTED};margin-bottom:10px;display:flex;align-items:center;gap:8px;">
@@ -802,8 +750,7 @@ with tab_new:
     raw_error_text = st.text_area("err", height=160, key="raw_error_text",
         placeholder="Traceback (most recent call last):\n  File \"payment_service/processor.py\", line 31, in process_payment\n    ...\nAttributeError: 'NoneType' object has no attribute 'transaction_id'",
         label_visibility="collapsed")
-    
-    # ── File upload ───────────────────────────────────────────────────
+
     uploaded_files = st.file_uploader(
         "Attach files",
         accept_multiple_files=True,
@@ -814,8 +761,8 @@ with tab_new:
     file_context = ""
     if uploaded_files:
         st.markdown(
-            '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">' +
-            "".join(f'<span style="background:{C_CARD2};border:1px solid {C_BORDER};border-radius:4px;padding:2px 10px;font-size:11px;color:{C_MUTED};font-family:monospace;">{f.name}</span>' for f in uploaded_files) +
+            f'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">' +
+            "".join(f'<span style="background:{C_CARD2};border:1px solid {C_BORDER};border-radius:4px;padding:2px 10px;font-size:11px;color:{C_TEXT2};font-family:monospace;">{f.name}</span>' for f in uploaded_files) +
             '</div>', unsafe_allow_html=True)
         for f in uploaded_files:
             try:
@@ -830,7 +777,7 @@ with tab_new:
     with st.expander("Add context  —  improves routing confidence", expanded=False):
         c1,c2,c3 = st.columns(3)
         service_hint  = c1.text_input("Service hint",key="ctx_sh",placeholder="payment-service")
-        environment   = c2.selectbox("Environment",["","production","staging","development"],key="ctx_env")
+        environment   = c2.selectbox("Environment",["production","staging","development"],key="ctx_env", index=None, placeholder="Select environment")
         occurrences   = c3.number_input("Occurrences last 4h",min_value=0,step=1,value=None,key="ctx_occ")
         c4,c5,c6 = st.columns(3)
         affected_users     = c4.number_input("Affected users",min_value=0,step=1,value=None,key="ctx_au")
@@ -849,8 +796,7 @@ with tab_new:
 
     def build_body():
         combined = raw_error_text.strip()
-        if file_context:
-            combined += file_context
+        if file_context: combined += file_context
         body = {"raw_error_text": combined}
         if service_hint.strip(): body["service_hint"]=service_hint.strip()
         if environment:          body["environment"]=environment
@@ -919,7 +865,7 @@ with tab_new:
             st.markdown(f"""<div class="cause-callout">
               <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:{C_AMBER};margin-bottom:8px;">⚠  Probable Cause — {fmt_pct(cause.get('confidence'))} confidence</div>
               <div style="font-size:13px;color:{C_TEXT};line-height:1.7;">{cause.get('description','')}</div>
-              <div style="font-size:11px;color:{C_MUTED};margin-top:8px;font-family:'JetBrains Mono',monospace;background:{C_CARD}20;padding:8px 10px;border-radius:5px;">
+              <div style="font-size:11px;color:{C_MUTED};margin-top:8px;font-family:'JetBrains Mono',monospace;background:{C_BG};padding:8px 10px;border-radius:5px;border:1px solid {C_BORDER};">
                 commit <span style="color:{C_AMBER};">{cause.get('commit_hash','?')}</span> by {cause.get('deployer','?')} — "{cause.get('commit_message','')}" ({cause.get('minutes_before_incident','?')} min before)
               </div>
             </div>""", unsafe_allow_html=True)
@@ -942,10 +888,10 @@ with tab_new:
                         <span style="font-size:14px;">{icon}</span>
                         <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:{color};">{rl}</span>
                       </div>
-                      <div style="font-size:14px;font-weight:700;color:{C_TEXT};margin-bottom:4px;">{name}</div>
-                      <div style="font-size:11px;color:{C_MUTED};margin-bottom:10px;">{ot}</div>
-                      <div style="height:1px;background:{C_BORDER};margin-bottom:10px;"></div>
-                      <div style="font-size:10px;color:{C_MUTED};"><span style="color:{color};">→</span> {delivery}</div>
+                      <div style="font-size:14px;font-weight:700;color:{C_TEXT2};margin-bottom:4px;">{name}</div>
+                      <div style="font-size:11px;color:#aaa;margin-bottom:10px;">{ot}</div>
+                      <div style="height:1px;background:#333;margin-bottom:10px;"></div>
+                      <div style="font-size:10px;color:#aaa;"><span style="color:{color};">→</span> {delivery}</div>
                     </div>""", unsafe_allow_html=True)
 
             eng = next((t for t in tickets if t.get("recipient_role")=="assignee"),tickets[0])
@@ -953,10 +899,10 @@ with tab_new:
             assignee  = routing.get("assignee","—")
             st.markdown(f"""<div style="background:{C_CARD};border:1px solid {C_BORDER};border-radius:10px;margin-top:16px;overflow:hidden;">
               <div style="background:{C_CARD2};padding:14px 20px;border-bottom:1px solid {C_BORDER};display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:{C_MUTED};">Jira Ticket Preview</span>
+                <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#aaa;">Jira Ticket Preview</span>
                 <span style="background:{C_BLUE}20;color:{C_BLUE};font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;font-family:monospace;">{jira_proj}</span>
                 {priority_badge(priority)}
-                <span style="margin-left:auto;font-size:11px;color:{C_MUTED};">Assigned to <strong style="color:{C_TEXT};">{assignee}</strong></span>
+                <span style="margin-left:auto;font-size:11px;color:#aaa;">Assigned to <strong style="color:{C_TEXT2};">{assignee}</strong></span>
               </div>
               <div style="padding:20px 24px;">
                 <div style="font-size:15px;font-weight:700;color:{C_TEXT};margin-bottom:16px;line-height:1.4;">{eng.get('title','')}</div>
@@ -1003,9 +949,9 @@ with tab_new:
                 icon="✅" if n.get("success") else "⚠️"
                 st.markdown(f"- {icon} **{n.get('recipient','?')}** via `{n.get('channel','?')}` — {output_type_label(n.get('output_type',''))}")
 
-# ── TAB 2: INCIDENT HISTORY ──────────────────────────────────────────────────
+# ── TAB 2 ────────────────────────────────────────────────────────────────────
 with tab_history:
-    st.markdown(f'<h2 style="margin:16px 0 4px 0;font-size:24px;font-weight:800;letter-spacing:-.03em;">Incident History</h2>', unsafe_allow_html=True)
+    st.markdown(f'<h2 style="margin:16px 0 4px 0;font-size:24px;font-weight:800;letter-spacing:-.03em;color:{C_TEXT};">Incident History</h2>', unsafe_allow_html=True)
     st.markdown(f'<p style="color:{C_MUTED};font-size:13px;margin:0 0 20px 0;">All routed incidents. Expand any row for full routing decision and ticket drafts.</p>', unsafe_allow_html=True)
 
     incidents = all_incidents_data
@@ -1016,7 +962,7 @@ with tab_history:
         if ts and (now_utc-ts)<=timedelta(days=7):
             s=inc.get("service","unknown"); rc2[s]=rc2.get(s,0)+1
     for s,c in sorted(rc2.items()):
-        if c>=3: st.markdown(f'<div class="stress-warning">🔴 <strong>Service stress:</strong> <code>{s}</code> — {c} incidents in 7 days. Consider running an architectural audit.</div>', unsafe_allow_html=True)
+        if c>=3: st.markdown(f'<div class="stress-warning">🔴 <strong>Service stress:</strong> <code>{s}</code> — {c} incidents in 7 days.</div>', unsafe_allow_html=True)
 
     svc_opts=(["All"]+sorted(org_config["services"].keys())) if org_config and org_config.get("services") else ["All"]+sorted({i.get("service") for i in incidents if i.get("service")})
     f1,f2,f3=st.columns(3)
@@ -1072,12 +1018,12 @@ with tab_history:
                     mins=inc.get("resolution_time_minutes")
                     if mins is not None: st.caption(f"Resolved in {mins} minutes.")
 
-# ── TAB 3: ARCHITECTURAL INTELLIGENCE ────────────────────────────────────────
+# ── TAB 3 ────────────────────────────────────────────────────────────────────
 with tab_intel:
     st.markdown("<div style='height:20px;'></div>", unsafe_allow_html=True)
     hcol,bcol=st.columns([5,1])
     with hcol:
-        st.markdown(f'<h2 style="margin:0 0 4px 0;font-size:24px;font-weight:800;letter-spacing:-.03em;">Architectural Intelligence</h2>', unsafe_allow_html=True)
+        st.markdown(f'<h2 style="margin:0 0 4px 0;font-size:24px;font-weight:800;letter-spacing:-.03em;color:{C_TEXT};">Architectural Intelligence</h2>', unsafe_allow_html=True)
         st.markdown(f'<p style="color:{C_MUTED};font-size:13px;margin:0 0 20px 0;">Agent 4 mines incident history for recurring patterns and files proactive architectural flags.</p>', unsafe_allow_html=True)
     with bcol:
         st.markdown("<div style='height:28px;'></div>", unsafe_allow_html=True)
@@ -1108,12 +1054,12 @@ with tab_intel:
             st.markdown(f"""<div class="flag-card">
               <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
                 <span class="badge badge-p1">{pattern}</span>
-                <span style="font-size:14px;font-weight:700;color:{C_TEXT};">{svc}</span>
+                <span style="font-size:14px;font-weight:700;color:{C_TEXT2};">{svc}</span>
                 {plm_html}
-                <span style="margin-left:auto;font-size:12px;color:{C_MUTED};">confidence {int(conf*100)}%</span>
+                <span style="margin-left:auto;font-size:12px;color:#aaa;">confidence {int(conf*100)}%</span>
               </div>
               {confidence_bar(conf)}
-              <div style="font-size:13px;color:{C_TEXT};margin-top:12px;line-height:1.7;">{flag.get('assessment','')}</div>
+              <div style="font-size:13px;color:{C_TEXT2};margin-top:12px;line-height:1.7;">{flag.get('assessment','')}</div>
             </div>""", unsafe_allow_html=True)
             if loc_text: st.markdown(f"**Flagged locations:** {loc_text}")
             if contributing: st.caption("Contributing incidents: "+", ".join(contributing))
@@ -1122,7 +1068,7 @@ with tab_intel:
     graph_data=api_get("/graph/nodes")
     if graph_data and graph_data.get("nodes"):
         try:
-            st.markdown(f'<div style="font-size:11px;color:{C_MUTED};margin-bottom:10px;padding:10px 14px;background:{C_CARD};border:1px solid {C_BORDER};border-radius:8px;display:flex;gap:20px;align-items:center;flex-wrap:wrap;"><span>🖱 <strong style="color:{C_TEXT};">Drag</strong> pan</span><span>🔍 <strong style="color:{C_TEXT};">Scroll</strong> zoom</span><span>👆 <strong style="color:{C_TEXT};">Hover</strong> details</span><span style="margin-left:auto;display:flex;gap:14px;"><span><span style="color:{C_RED};">●</span> 2+ incidents</span><span><span style="color:{C_ORANGE};">●</span> connected</span><span><span style="color:#2d3548;">●</span> clean</span></span></div>', unsafe_allow_html=True)
+            st.markdown(f'<div style="font-size:11px;color:{C_MUTED};margin-bottom:10px;padding:10px 14px;background:{C_CARD};border:1px solid {C_BORDER};border-radius:8px;display:flex;gap:20px;align-items:center;flex-wrap:wrap;"><span>🖱 <strong style="color:{C_TEXT};">Drag</strong> pan</span><span>🔍 <strong style="color:{C_TEXT};">Scroll</strong> zoom</span><span>👆 <strong style="color:{C_TEXT};">Hover</strong> details</span><span style="margin-left:auto;display:flex;gap:14px;"><span><span style="color:{C_RED};">●</span> 2+ incidents</span><span><span style="color:{C_ORANGE};">●</span> connected</span><span><span style="color:#888;">●</span> clean</span></span></div>', unsafe_allow_html=True)
             components.html(build_graph_html(graph_data),height=580,scrolling=False)
         except Exception as exc:
             logger.error("Graph failed: %s",exc); st.error("Could not render graph.")

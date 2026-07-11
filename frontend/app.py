@@ -665,6 +665,14 @@ if st.session_state["page"] == "connect":
     st.stop()
 
 # ---------------------------------------------------------------------------
+# PAGE: PRODUCT
+# ---------------------------------------------------------------------------
+
+if st.session_state["page"] == "product":
+    st.session_state["page"] = "landing"
+    st.rerun()
+    
+# ---------------------------------------------------------------------------
 # PAGE: DASHBOARD
 # ---------------------------------------------------------------------------
 
@@ -1022,5 +1030,4 @@ with tab_intel:
             if contributing: st.caption("Contributing incidents: "+", ".join(contributing))
 
     st.markdown(f'<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:{C_MUTED};margin:24px 0 8px 0;">Code Knowledge Graph</div>', unsafe_allow_html=True)
-    graph_data=api_get("/graph/nodes")
     st.markdown(f'<div style="text-align:center;padding:60px;color:{C_MUTED};font-size:14px;background:{C_CARD};border:1px solid {C_BORDER};border-radius:8px;">Code graph — run an audit to populate.</div>', unsafe_allow_html=True)

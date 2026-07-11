@@ -18,7 +18,7 @@ logger = logging.getLogger("routezero.frontend")
 
 BACKEND_URL     = os.getenv("BACKEND_URL", "http://localhost:8000").rstrip("/")
 DEMO_MODE       = os.getenv("DEMO_MODE", "true").strip().lower() in ("1", "true", "yes")
-READ_TIMEOUT    = 5
+READ_TIMEOUT    = 30
 LLM_TIMEOUT     = 120
 APPROVE_TIMEOUT = 30
 
@@ -673,7 +673,8 @@ if nav_click:
     st.session_state["prev_page"] = "dashboard"
     st.session_state["page"] = nav_click
     st.rerun()
-
+with st.spinner("Connecting to backend..."):
+    pass
 try:
     stats              = api_get("/stats") or {}
     all_incidents_data = api_get("/incidents") or []

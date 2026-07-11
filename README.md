@@ -1,163 +1,201 @@
 # RouteZero
 
-**Zero-touch incident routing. Every claim traceable to a verified input — nothing invented.**
+**Autonomous incident routing pipeline. Four agents, medallion architecture, zero invented claims.**
 
-When an engineer finds an error, the technical work takes minutes. The administrative work that follows takes 20–40 minutes, every single time: figuring out which team owns the service, writing a ticket detailed enough that the receiving team doesn't come back with five questions, setting the right priority, and notifying the right people with the right level of detail for each of them. RouteZero eliminates that. Paste a stack trace with whatever context you have, and a four-agent pipeline classifies the failure, routes it to the owning team with an explained priority, and drafts a full Jira ticket plus role-appropriate messages for every stakeholder — engineer ticket, five-sentence manager digest, cross-functional FYI. You review a preview, click **Approve & Send**, and everything is created. A fourth agent then mines the accumulated incident history for architectural rot and files proactive flags before the next incident happens. The system's one governing rule: if a piece of information was not provided as input, it does not appear in any output. Ever.
+> Built for the AMD Developer Hackathon ACT II (Track 3). Recognized by hackathon mentors as a strong real-world application of agent orchestration for production engineering workflows.
+
+---
+
+## What it does
+
+When a production incident hits, an engineer pastes a stack trace. RouteZero runs it through a four-agent pipeline that classifies the failure, routes it to the owning team with an explained priority decision, and drafts a full Jira ticket plus role-appropriate messages for every stakeholder — full technical ticket for the engineer, leadership-framed summary for the team lead, five-sentence plain-English digest for the manager. A fourth agent mines accumulated incident history for architectural patterns and files proactive flags before the next incident happens.
+
+One governing rule: **if a piece of information was not provided as input, it does not appear in any output.**
+
+---
 
 ## Architecture
 
-Four agents, orchestrated in pure Python (no LangChain, no AutoGen — by design). LLM usage is deliberately minimal and always validated.
-
 ```
-                         ┌──────────────────────────────────────────────┐
-                         │        Streamlit Dashboard (:8501)           │
-                         │  New Incident │ History │ Arch Intelligence  │
-                         └──────────────────┬───────────────────────────┘
-                                            │ HTTP
-                         ┌──────────────────▼───────────────────────────┐
-                         │           FastAPI Backend (:8000)            │
-                         └──────────────────┬───────────────────────────┘
-                                            │
-  error text + context                      ▼
- ───────────────────────► [Agent 1: Classifier] ──► [Agent 2: Router] ──► [Agent 3: Ticket Writer]
-                            regex + rules only        rules-first,           Fireworks prose from
-                            ZERO LLM calls            LLM only if            verified facts only,
-                                 │                    confidence < 0.65      hallucination-validated
-                                 │                         │                      │        │
-                                 ▼                         ▼                      ▼        ▼
-                          ┌────────────────────────────────────────────┐   Jira + Slack (or
-                          │       DuckDB (medallion layout)            │   DEMO_MODE previews)
-                          │  bronze_raw_incidents                      │
-                          │  silver_classified / silver_routing        │
-                          │  gold_tickets / gold_incident_intelligence │
-                          │  graph_nodes / graph_edges                 │
-                          └───────────────────┬────────────────────────┘
-                                              │ reads history
-                                              ▼
-                              [Agent 4: Architectural Auditor]
-                          pattern detection + code graph traversal
-                                              │
-                                              ▼
-                            PLM tickets + red/orange/green graph viz
+                    ┌─────────────────────────────────────────┐
+                    │       Streamlit Dashboard (:8501)        │
+                    │  New Incident | History | Arch Intel     │
+                    └──────────────────┬──────────────────────┘
+                                       │ HTTP
+                    ┌──────────────────▼──────────────────────┐
+                    │        FastAPI Backend (:8000)           │
+                    └──────────────────┬──────────────────────┘
+                                       │
+  raw error text + context             ▼
+ ──────────────────► [A1: Classifier] ──► [A2: Router] ──► [A3: Ticket Writer]
+                      regex + rules        rules-first,       Fireworks prose,
+                      ZERO LLM calls       LLM only if        hallucination-
+                                           conf < 0.65        validated
+                           │                    │                  │
+                           ▼                    ▼                  ▼
+                    ┌──────────────────────────────────────────────────┐
+                    │             DuckDB — Medallion Layout            │
+                    │  bronze_raw_incidents                            │
+                    │  silver_classified_incidents                     │
+                    │  silver_routing_decisions                        │
+                    │  gold_created_tickets                            │
+                    │  gold_incident_intelligence                      │
+                    │  gold_audit_runs                                 │
+                    │  graph_nodes / graph_edges                       │
+                    └───────────────────┬──────────────────────────────┘
+                                        │ reads history
+                                        ▼
+                        [A4: Architectural Auditor]
+                    pattern detection + code graph traversal
+                                        │
+                                        ▼
+                      PLM tickets + red/orange/green graph viz
 ```
 
-### Agent 1 — Classifier (`agents/classifier.py`)
+### Data pipeline
 
-Deterministic. **Zero LLM calls.** Failure type via regex patterns, service detection via keyword/file-path scoring against the org config, stack trace extraction (Python and Java formats), environment detection, blast radius from affected-user counts, and a missing-context list. When a judge asks how a classification was made, the answer is a specific regex or rule — not a model.
+Raw unstructured error text enters at bronze, gets classified and validated at silver, and exits as structured gold-layer intelligence — the same ELT pattern used in production data platforms, with agent-based transformations in place of dbt models. Pydantic v2 schemas enforce strict data contracts at every stage boundary; malformed payloads are blocked before they reach downstream consumers.
 
-### Agent 2 — Router (`agents/router.py`)
+### Agent 1 — Classifier
 
-Rules-first. Team ownership, priority (with explicit reasoning for why that priority fired), stakeholder assembly, manager-digest thresholds, and deployment-based probable cause are all deterministic. Fireworks (Gemma2-9b-it) is consulted in exactly one situation: service confidence from Agent 1 below **0.65**. Every decision ships with a plain-English `routing_reasoning` field you can verify.
+Fully deterministic. Zero LLM calls. Failure type via regex patterns, service detection via keyword and file-path scoring against the org config, stack trace extraction (Python and Java formats), environment inference, blast radius from affected-user counts. Every classification traces to a specific rule — no model involved, fully auditable.
 
-### Agent 3 — Ticket Writer (`agents/ticket_writer.py`)
+### Agent 2 — Router
 
-Fireworks assembles prose (summary, manager digest, FYI) from the verified facts in the routing decision — it is never asked to invent anything. Every AI response is **hallucination-validated**: any number or file-like token not present in the input facts causes the text to be discarded in favor of a deterministic template. Evidence, blast radius, and investigate-first sections are always deterministic. Works with no API key at all via fallback templates.
+Rules-first. Team ownership, priority with explicit reasoning, stakeholder assembly, and deployment-based probable cause are all deterministic. Fireworks (Gemma2-9b-it) is consulted in exactly one case: when Agent 1 service confidence falls below 0.65. Every routing decision includes a plain-English `routing_reasoning` field.
 
-### Agent 4 — Architectural Auditor (`agents/auditor.py`)
+### Agent 3 — Ticket Writer
 
-Runs on demand from the dashboard. Reads incident intelligence from DuckDB and detects three patterns: **recurring location** (same file:line in 2+ incidents), **service stress** (3+ incidents across 2+ failure types in one service), and **cascading failure** (cross-service incidents within 30 minutes). For each finding it fetches the actual code, pulls the two-hop neighborhood from the code knowledge graph, and asks Fireworks to assess the structural weakness — citing the real code. Flags above 0.70 confidence become PLM Jira tickets. It only makes claims about code that appeared in real incident stack traces; when evidence is thin, it stays silent.
+Fireworks assembles prose from the verified facts in the routing decision — it is never asked to invent anything. Hallucination validation: any number or file-like token in AI output not present in the input facts causes that text to be discarded and replaced with a deterministic template. Three stakeholder versions per incident: full technical ticket, leadership-framed summary, five-sentence manager digest.
 
-### Storage and the code graph
+### Agent 4 — Architectural Auditor
 
-- **DuckDB medallion layout** (`core/database.py`): `bronze_raw_incidents` (append-only raw inputs) → `silver_classified_incidents` / `silver_routing_decisions` (agent outputs) → `gold_created_tickets` / `gold_incident_intelligence` / `gold_audit_runs` (finished products), plus graph tables.
-- **Code knowledge graph** (`core/graph.py`): the fictional StreamCo codebase in `demo_repo/` is parsed with the stdlib `ast` module into a `networkx` graph (modules, functions, classes; contains/imports/calls edges), persisted to DuckDB, and rendered with `pyvis` in the dashboard — **red** nodes appeared in 2+ incidents, **orange** nodes neighbor red ones, **green** nodes are clean.
+On-demand from the dashboard. Reads gold-layer incident intelligence and detects three patterns:
+
+- **Recurring location** — same file:line appearing in 2+ incidents
+- **Service stress** — 3+ incidents across 2+ failure types in one service within 7 days
+- **Cascading failure** — cross-service incidents within 30 minutes of each other
+
+For each finding, it fetches the actual source code, traverses the two-hop neighborhood in the code knowledge graph, and asks Fireworks to assess the structural weakness — citing real code from real incidents. Flags above 0.70 confidence become PLM Jira tickets. When evidence is thin, it stays silent.
+
+### Code knowledge graph
+
+The StreamCo demo codebase in `demo_repo/` is parsed with Python's stdlib `ast` module into a `networkx` directed graph (nodes: modules, functions, classes; edges: contains, imports, calls). The graph is persisted to DuckDB's `graph_nodes` / `graph_edges` tables and rendered with `pyvis` in the dashboard. Red nodes appeared in 2+ incidents. Orange nodes neighbor red ones. Green nodes are clean.
+
+---
 
 ## Tech stack
 
-- **FastAPI + uvicorn** — backend API
-- **Streamlit** — dashboard
-- **DuckDB** — file-based medallion warehouse
-- **Fireworks AI, Gemma2-9b-it** (`accounts/fireworks/models/gemma2-9b-it`) — powers **all** LLM calls in the system (qualifies for the Gemma prize)
-- **networkx + ast** — code knowledge graph; **pyvis** — graph visualization
-- **Pydantic v2** — strict schemas as the only contract between agents
-- **requests** — direct Jira / Slack / GitHub REST integration; **python-dotenv** — configuration
-- **No agent frameworks** — orchestration is pure Python, by design
+| Layer | Technology |
+|---|---|
+| Backend API | FastAPI + uvicorn |
+| Frontend | Streamlit |
+| Data warehouse | DuckDB (medallion layout) |
+| LLM | Fireworks AI — Gemma2-9b-it (`accounts/fireworks/models/gemma2-9b-it`) |
+| Code graph | networkx + stdlib ast + pyvis |
+| Schema contracts | Pydantic v2 |
+| Orchestration | Pure Python — no LangChain, no AutoGen |
+| Integrations | Jira, Slack, GitHub REST (all DEMO_MODE-aware) |
+
+All LLM calls use Gemma2-9b-it via Fireworks AI (qualifies for the AMD Hackathon Gemma prize track).
+
+---
 
 ## Setup
 
 ### Docker (recommended)
 
 ```bash
-cp .env.example .env    # DEMO_MODE=true works with zero credentials
+cp .env.example .env        # DEMO_MODE=true works with zero credentials
 docker-compose up
 ```
 
-- Backend: http://localhost:8000 · Dashboard: http://localhost:8501
-- The database initializes automatically, the five historical incidents seed automatically, and the code graph builds on the first audit run. No manual steps.
+Backend available at `http://localhost:8000` — Dashboard at `http://localhost:8501`.
+
+The database initializes automatically, five historical incidents seed on first run, and the code knowledge graph builds on the first audit. No manual steps.
 
 ### Local development
 
 ```bash
 python3.11 -m venv .venv
-.venv\Scripts\activate          # Windows  (Linux/macOS: source .venv/bin/activate)
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 cp .env.example .env
 
-uvicorn main:app --port 8000            # terminal 1
-streamlit run frontend/app.py           # terminal 2
+uvicorn main:app --port 8000 --reload    # terminal 1
+streamlit run frontend/app.py            # terminal 2
 ```
 
 ### Environment variables
 
-| Variable | Default | Purpose |
+| Variable | Default | Notes |
 |---|---|---|
-| `DEMO_MODE` | `true` | **The important one.** When true, Jira and Slack render as previews in the dashboard — no external calls, no credentials needed. |
-| `FIREWORKS_API_KEY` | *(empty)* | Optional. Without it, deterministic fallback templates are used everywhere. Add a real key to get AI-written prose. |
+| `DEMO_MODE` | `true` | When true, Jira and Slack render as previews — no external calls, no credentials needed. |
+| `FIREWORKS_API_KEY` | *(empty)* | Without it, deterministic fallback templates are used. Add a real key for AI-written prose. |
 | `FIREWORKS_MODEL` | `accounts/fireworks/models/gemma2-9b-it` | Used for every LLM call. |
 | `DUCKDB_PATH` | `./database/routezero.db` | Database file location. |
+| `BACKEND_URL` | `http://localhost:8000` | Set to the deployed backend URL on Streamlit Cloud. |
 | `JIRA_API_TOKEN` / `JIRA_BASE_URL` / `JIRA_EMAIL` | *(empty)* | Only needed with `DEMO_MODE=false`. |
 | `SLACK_WEBHOOK_URL` | *(empty)* | Only needed with `DEMO_MODE=false`. |
-| `GITHUB_TOKEN` / `GITHUB_REPO_OWNER` / `GITHUB_REPO_NAME` | *(empty)* | Optional; auditor falls back to reading `demo_repo/` locally. |
 
-**TL;DR: `DEMO_MODE=true` demos the entire system with zero credentials.**
+**`DEMO_MODE=true` demos the entire system with zero credentials.**
+
+---
 
 ## Demo walkthrough
 
-Four scenarios, in order, in the dashboard.
+Four scenarios in order, all using the dashboard.
 
-**Scenario 1 — Payment failure, rich context.** Paste `data/sample_errors/payment_error.txt` into the New Incident tab. In *Add context*: 847 affected users, enterprise tier, production, a deployment 37 minutes ago (any commit hash/message), SLA breach in 40 minutes. Expected: **P1 → payments-team**, manager digest triggered, probable cause linked to the deployment (commit, deployer, message cited), routing confidence above 0.85.
+**Scenario 1 — Payment failure, rich context.**
+Paste `data/sample_errors/payment_error.txt`. In *Add context*: 847 affected users, enterprise tier, production, deployment 37 minutes ago (any commit hash and message), SLA breach in 40 minutes.
+Expected: **P1 → payments-team**, manager digest triggered, probable cause linked to the deployment, routing confidence above 0.85.
 
-**Scenario 2 — Auth failure, minimal context.** Paste `data/sample_errors/auth_error.txt` with no context at all. Expected: **P1 → security-team** (auth is critical-path), routing confidence around 0.75, and the missing-context list showing every field that was not provided — the system tells you what it didn't know instead of guessing.
+**Scenario 2 — Auth failure, minimal context.**
+Paste `data/sample_errors/auth_error.txt` with no context filled in.
+Expected: **P1 → security-team** (auth is critical-path), confidence around 0.75, and a missing-context list showing every field that was not provided.
 
-**Scenario 3 — ML timeout, medium context.** Paste `data/sample_errors/ml_timeout_error.txt` with affected users under 100 and environment set to staging. Expected: **P2 → ml-platform-team**, no manager digest, lower blast radius.
+**Scenario 3 — ML timeout, medium context.**
+Paste `data/sample_errors/ml_timeout_error.txt` with affected users under 100 and environment set to staging.
+Expected: **P2 → ml-platform-team**, no manager digest, lower blast radius.
 
-**Scenario 4 — The Auditor.** Open the Architectural Intelligence tab and click **Run Audit Now**. Using the five pre-seeded historical incidents, Agent 4 flags the recurring location at `payment_service/processor.py:31` — the null-reference bug that appears in three separate seeded incidents — with confidence **0.85**, creates a PLM ticket listing the contributing incident IDs, and the code graph renders that node in **red**.
+**Scenario 4 — The Auditor.**
+Open the *Architectural Intelligence* tab and click **Run Audit**. Using the five pre-seeded historical incidents, Agent 4 flags the recurring location at `payment_service/processor.py:31` — a null-reference bug appearing in three separate incidents — with confidence 0.85, files a PLM ticket listing contributing incident IDs, and renders that node red in the code graph.
 
-## Deploying to Streamlit Community Cloud
-
-1. Host the FastAPI backend anywhere reachable — Render, Railway, or Fly.io free tiers all work (`uvicorn main:app --host 0.0.0.0 --port 8000`).
-2. On [Streamlit Community Cloud](https://share.streamlit.io), deploy this repo with **`frontend/app.py`** as the entrypoint.
-3. In the Streamlit app's secrets/environment, set `BACKEND_URL` to the backend's public URL (and `DEMO_MODE=true`).
-
-**Live demo:** `<STREAMLIT_CLOUD_URL_HERE>`
+---
 
 ## Running the tests
 
 ```bash
-.venv\Scripts\python.exe -m pytest tests/ -v    # Windows
-python -m pytest tests/                          # anywhere
+python -m pytest tests/ -v
 ```
 
-80+ tests cover the schemas, database layer, all four agents, integration clients (demo mode), the code graph, and every API endpoint.
+80+ tests covering schemas, database layer, all four agents, integration clients (demo mode), code graph, and every API endpoint.
+
+---
 
 ## Repository structure
 
 ```
-agents/         The four agents: classifier, router, ticket_writer, auditor
-core/           Schemas (Pydantic v2), DuckDB manager, Fireworks client, code graph
-integrations/   Jira, Slack, and GitHub clients (all DEMO_MODE-aware)
-data/           StreamCo org config, 4 sample errors, 5 seeded historical incidents
-demo_repo/      Fictional StreamCo codebase the graph is built from (incl. the bug at processor.py:31)
-frontend/       Streamlit dashboard (app.py)
-tests/          Pytest suite
-docker/         Backend and frontend Dockerfiles
-main.py         FastAPI app wiring the pipeline: POST /incidents, /audit, /approve, ...
+agents/          classifier.py, router.py, ticket_writer.py, auditor.py
+core/            schemas (Pydantic v2), DuckDB manager, Fireworks client, graph builder
+integrations/    Jira, Slack, GitHub clients — all DEMO_MODE-aware
+data/            StreamCo org config, sample errors, 5 seeded historical incidents
+demo_repo/       Fictional StreamCo codebase — the bug at processor.py:31 is real in the graph
+frontend/        app.py — Streamlit dashboard
+tests/           Pytest suite
+docker/          Backend and frontend Dockerfiles
+main.py          FastAPI app — POST /incidents, /audit, /approve, /resolve, /graph/nodes, /stats
 ```
-
-## License
-
-MIT — see [LICENSE](LICENSE).
 
 ---
 
-*RouteZero — built from real engineering pain. Every output traceable to a verified input. Nothing invented.*
+## Live demo
+
+- Frontend: https://routezero-hackathon.streamlit.app
+- Backend: https://routezero-hackathon.onrender.com (free tier — open `/docs` first and wait 30 seconds for it to wake)
+
+---
+
+## License
+
+MIT

@@ -11,7 +11,6 @@ import requests
 import streamlit as st
 import streamlit.components.v1 as components
 from dotenv import load_dotenv
-from pyvis.network import Network
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
@@ -349,39 +348,7 @@ def render_dash_nav(current_page: str):
 # ---------------------------------------------------------------------------
 
 def build_graph_html(graph_data):
-    try:
-        nodes = graph_data.get("nodes") or []
-        edges = graph_data.get("edges") or []
-        red_ids = {n.get("node_id") for n in nodes if int(n.get("incident_count") or 0)>=2 and n.get("node_id")}
-        adj = {}
-        for e in edges:
-            s,t = e.get("source_node_id"), e.get("target_node_id")
-            if s and t: adj.setdefault(s,set()).add(t); adj.setdefault(t,set()).add(s)
-        net = Network(height="520px",width="100%",directed=True,cdn_resources="remote",bgcolor="#1a1a1a",font_color=C_TEXT2)
-        net.set_options("""{
-          "physics":{"enabled":false},
-          "nodes":{"borderWidth":0,"font":{"size":11,"face":"Inter, sans-serif"}},
-          "edges":{"smooth":{"type":"continuous","roundness":0.3},"width":1},
-          "interaction":{"hover":true,"tooltipDelay":80,"zoomView":true,"dragView":true}
-        }""")
-        added = set()
-        for node in nodes:
-            nid = node.get("node_id")
-            if not nid: continue
-            ic = int(node.get("incident_count") or 0)
-            if nid in red_ids: color={"background":C_RED,"border":C_RED}
-            elif adj.get(nid,set())&red_ids: color={"background":C_ORANGE,"border":C_ORANGE}
-            else: color={"background":"#2d2d2d","border":"#444"}
-            net.add_node(nid,label=node.get("name",nid),color=color,size=16+8*ic,font={"color":C_TEXT2,"size":11})
-            added.add(nid)
-        for e in edges:
-            s,t = e.get("source_node_id"),e.get("target_node_id")
-            if s in added and t in added:
-                net.add_edge(s,t,color={"color":"#555"},arrows="to")
-        return net.generate_html()
-    except Exception:
-        return f'<div style="height:100%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:13px;">Graph unavailable</div>'
-
+    return None
 # ---------------------------------------------------------------------------
 # Page renderers
 # ---------------------------------------------------------------------------
@@ -649,20 +616,7 @@ if st.session_state["page"] == "landing":
     arch_left, arch_right = st.columns([1,1], gap="large")
 
     with arch_left:
-        graph_data_landing = api_get("/graph/nodes")
-        if graph_data_landing and graph_data_landing.get("nodes"):
-            try:
-                components.html(build_graph_html(graph_data_landing), height=360, scrolling=False)
-            except Exception:
-                st.markdown(f'<div style="height:360px;background:{C_CARD2};border:1px solid {C_BORDER};border-radius:10px;display:flex;align-items:center;justify-content:center;color:{C_TEXT2};font-size:13px;">Graph unavailable</div>', unsafe_allow_html=True)
-        else:
-            st.markdown(f"""<div style="height:360px;background:{C_CARD2};border:1px solid {C_BORDER};border-radius:10px;display:flex;align-items:center;justify-content:center;">
-              <div style="text-align:center;color:{C_TEXT2};">
-                <div style="font-size:32px;margin-bottom:8px;">🕸️</div>
-                <div style="font-size:13px;">Code knowledge graph</div>
-                <div style="font-size:11px;margin-top:4px;color:#aaa;">Run an audit to populate</div>
-              </div>
-            </div>""", unsafe_allow_html=True)
+        st.markdown(f'<div style="height:360px;background:{C_CARD2};border:1px solid {C_BORDER};border-radius:10px;display:flex;align-items:center;justify-content:center;color:{C_TEXT2};font-size:13px;">Graph available after audit — visit the dashboard</div>', unsafe_allow_html=True)
         st.markdown(f'<div style="display:flex;gap:16px;margin-top:10px;font-size:11px;color:{C_MUTED};"><span><span style="color:{C_RED};">●</span> 2+ incidents</span><span><span style="color:{C_ORANGE};">●</span> connected</span><span><span style="color:#888;">●</span> clean</span></div>', unsafe_allow_html=True)
 
     with arch_right:
@@ -1069,11 +1023,4 @@ with tab_intel:
 
     st.markdown(f'<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:{C_MUTED};margin:24px 0 8px 0;">Code Knowledge Graph</div>', unsafe_allow_html=True)
     graph_data=api_get("/graph/nodes")
-    if graph_data and graph_data.get("nodes"):
-        try:
-            st.markdown(f'<div style="font-size:11px;color:{C_MUTED};margin-bottom:10px;padding:10px 14px;background:{C_CARD};border:1px solid {C_BORDER};border-radius:8px;display:flex;gap:20px;align-items:center;flex-wrap:wrap;"><span>🖱 <strong style="color:{C_TEXT};">Drag</strong> pan</span><span>🔍 <strong style="color:{C_TEXT};">Scroll</strong> zoom</span><span>👆 <strong style="color:{C_TEXT};">Hover</strong> details</span><span style="margin-left:auto;display:flex;gap:14px;"><span><span style="color:{C_RED};">●</span> 2+ incidents</span><span><span style="color:{C_ORANGE};">●</span> connected</span><span><span style="color:#888;">●</span> clean</span></span></div>', unsafe_allow_html=True)
-            components.html(build_graph_html(graph_data), height=580, scrolling=False)
-        except Exception:
-            st.markdown(f'<div style="height:360px;background:{C_CARD2};border:1px solid {C_BORDER};border-radius:10px;display:flex;align-items:center;justify-content:center;color:{C_TEXT2};font-size:13px;">Graph unavailable</div>', unsafe_allow_html=True)
-    else:
-        st.markdown(f'<div style="text-align:center;padding:60px;color:{C_MUTED};font-size:14px;background:{C_CARD};border:1px solid {C_BORDER};border-radius:8px;">Code graph empty — run an audit.</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="text-align:center;padding:60px;color:{C_MUTED};font-size:14px;background:{C_CARD};border:1px solid {C_BORDER};border-radius:8px;">Code graph — run an audit to populate.</div>', unsafe_allow_html=True)

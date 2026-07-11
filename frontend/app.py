@@ -300,7 +300,7 @@ def render_nav(current_page: str):
     clicked = None
     with p_col:
         if st.button("Product", key=f"nav_p_{current_page}", use_container_width=True):
-            clicked = "product"
+            clicked = "dashboard"
     with d_col:
         if st.button("Docs", key=f"nav_d_{current_page}", use_container_width=True):
             clicked = "docs"
@@ -664,13 +664,6 @@ if st.session_state["page"] == "connect":
     render_connect_page(back_to=st.session_state.get("prev_page","dashboard"))
     st.stop()
 
-# ---------------------------------------------------------------------------
-# PAGE: PRODUCT
-# ---------------------------------------------------------------------------
-
-if st.session_state["page"] == "product":
-    st.session_state["page"] = "landing"
-    st.rerun()
 # ---------------------------------------------------------------------------
 # PAGE: DASHBOARD
 # ---------------------------------------------------------------------------

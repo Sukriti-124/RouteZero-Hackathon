@@ -349,37 +349,38 @@ def render_dash_nav(current_page: str):
 # ---------------------------------------------------------------------------
 
 def build_graph_html(graph_data):
-    nodes = graph_data.get("nodes") or []
-    edges = graph_data.get("edges") or []
-    red_ids = {n.get("node_id") for n in nodes if int(n.get("incident_count") or 0)>=2 and n.get("node_id")}
-    adj = {}
-    for e in edges:
-        s,t = e.get("source_node_id"), e.get("target_node_id")
-        if s and t: adj.setdefault(s,set()).add(t); adj.setdefault(t,set()).add(s)
-    net = Network(height="520px",width="100%",directed=True,cdn_resources="remote",bgcolor="#1a1a1a",font_color=C_TEXT2)
-    net.set_options("""{
-      "physics":{"enabled":true,"forceAtlas2Based":{"gravitationalConstant":-80,"centralGravity":0.005,"springLength":130,"springConstant":0.04,"damping":0.6,"avoidOverlap":1},"maxVelocity":40,"minVelocity":0.75,"solver":"forceAtlas2Based","stabilization":{"enabled":true,"iterations":200,"updateInterval":25}},
-      "nodes":{"borderWidth":0,"borderWidthSelected":2,"font":{"size":11,"face":"Inter, sans-serif"},"scaling":{"min":16,"max":44}},
-      "edges":{"smooth":{"type":"continuous","roundness":0.3},"width":1,"selectionWidth":2},
-      "interaction":{"hover":true,"navigationButtons":true,"keyboard":true,"tooltipDelay":80,"zoomView":true,"dragView":true}
-    }""")
-    added = set()
-    for node in nodes:
-        nid = node.get("node_id")
-        if not nid: continue
-        ic = int(node.get("incident_count") or 0)
-        if nid in red_ids: color={"background":C_RED,"border":C_RED,"highlight":{"background":"#e74c3c","border":"#c0392b"}}
-        elif adj.get(nid,set())&red_ids: color={"background":C_ORANGE,"border":C_ORANGE,"highlight":{"background":"#e67e22","border":"#d35400"}}
-        else: color={"background":"#2d2d2d","border":"#444","highlight":{"background":"#3d3d3d","border":"#555"}}
-        name = node.get("name",nid)
-        hover = f"{name}\n{node.get('file_path','?')} L{node.get('start_line','?')}-{node.get('end_line','?')}\nincidents: {ic}"
-        net.add_node(nid,label=name,color=color,size=16+8*ic,title=hover,font={"color":C_TEXT2,"size":11})
-        added.add(nid)
-    for e in edges:
-        s,t = e.get("source_node_id"),e.get("target_node_id")
-        if s in added and t in added:
-            net.add_edge(s,t,title=e.get("relationship_type",""),color={"color":"#555","highlight":C_ACCENT},arrows="to")
-    return net.generate_html()
+    try:
+        nodes = graph_data.get("nodes") or []
+        edges = graph_data.get("edges") or []
+        red_ids = {n.get("node_id") for n in nodes if int(n.get("incident_count") or 0)>=2 and n.get("node_id")}
+        adj = {}
+        for e in edges:
+            s,t = e.get("source_node_id"), e.get("target_node_id")
+            if s and t: adj.setdefault(s,set()).add(t); adj.setdefault(t,set()).add(s)
+        net = Network(height="520px",width="100%",directed=True,cdn_resources="remote",bgcolor="#1a1a1a",font_color=C_TEXT2)
+        net.set_options("""{
+          "physics":{"enabled":false},
+          "nodes":{"borderWidth":0,"font":{"size":11,"face":"Inter, sans-serif"}},
+          "edges":{"smooth":{"type":"continuous","roundness":0.3},"width":1},
+          "interaction":{"hover":true,"tooltipDelay":80,"zoomView":true,"dragView":true}
+        }""")
+        added = set()
+        for node in nodes:
+            nid = node.get("node_id")
+            if not nid: continue
+            ic = int(node.get("incident_count") or 0)
+            if nid in red_ids: color={"background":C_RED,"border":C_RED}
+            elif adj.get(nid,set())&red_ids: color={"background":C_ORANGE,"border":C_ORANGE}
+            else: color={"background":"#2d2d2d","border":"#444"}
+            net.add_node(nid,label=node.get("name",nid),color=color,size=16+8*ic,font={"color":C_TEXT2,"size":11})
+            added.add(nid)
+        for e in edges:
+            s,t = e.get("source_node_id"),e.get("target_node_id")
+            if s in added and t in added:
+                net.add_edge(s,t,color={"color":"#555"},arrows="to")
+        return net.generate_html()
+    except Exception:
+        return f'<div style="height:100%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:13px;">Graph unavailable</div>'
 
 # ---------------------------------------------------------------------------
 # Page renderers
